@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Pomodoro Timer</title>
+    <style>
+        /* style.css - Premium Theme & Styling for Pomodoro Timer */
+
+        /* Import Google Font Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            /* Color Palette */
+            --bg-dark: #0b0914;
+            --bg-gradient: linear-gradient(135deg, #0b0914 0%, #151126 100%);
+            
+            /* Focus State Colors */
+            --focus-primary: #ff5e62;
+            --focus-secondary: #ff9966;
+            --focus-gradient: linear-gradient(135deg, var(--focus-primary) 0%, var(--focus-secondary) 100%);
+            --focus-glow: rgba(255, 94, 98, 0.45);
+            
+            /* Break State Colors */
+            --break-primary: #00b09b;
+            --break-secondary: #96c93d;
+            --break-gradient: linear-gradient(135deg, var(--break-primary) 0%, var(--break-secondary) 100%);
+            --break-glow: rgba(0, 176, 155, 0.45);
+            
+            /* Neutral Colors */
+            --text-main: #f5f4f8;
+            --text-muted: #8e8a9f;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --glass-border-focus: rgba(255, 255, 255, 0.15);
+            --glass-shadow: rgba(0, 0, 0, 0.4);
+            
+            /* System State Active */
+            --theme-primary: var(--focus-primary);
+            --theme-secondary: var(--focus-secondary);
+            --theme-gradient: var(--focus-gradient);
+            --theme-glow: var(--focus-glow);
+            
+            /* Font sizes & styling */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Transitions */
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Apply active state classes dynamically via JS */
+        body.mode-focus {
+            --theme-primary: var(--focus-primary);
+            --theme-secondary: var(--focus-secondary);
+            --theme-gradient: var(--focus-gradient);
+            --theme-glow: var(--focus-glow);
+        }
+
+        body.mode-break {
+            --theme-primary: var(--break-primary);
+            --theme-secondary: var(--break-secondary);
+            --theme-gradient: var(--break-gradient);
+            --theme-glow: var(--break-glow);
+        }
+
+        /* CSS Resets & Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow-x: hidden;
+            line-height: 1.5;
+            transition: background var(--transition-smooth);
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: var(--theme-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: background-image var(--transition-smooth);
+        }
+
+        .brand-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            display: inline-block;
+            vertical-align: middle;
+            animation: spin-slow 20s linear infinite;
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Main Container Layout */
+        main {
+            width: 100%;
+            max-width: 1200px;
+            padding: 1rem 1.5rem 3rem;
+            display: flex;
+            flex-direction: row;
+            gap: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        /* Left/Main Column: Timer & Controls */
+        .timer-container {
+            flex: 1.2;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px var(--glass-shadow);
+            transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-container::before {
+            content: '';
+            position: absolute;
+            top: -150px;
+            right: -150px;
+            width: 300px;
+            height: 300px;
+            background: var(--theme-glow);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+            transition: background var(--transition-smooth);
+        }
+
+        /* Timer Ring & Countdown */
+        .timer-visual {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            z-index: 1;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.03);
+            stroke-width: 8;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: url(#timerGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 816.8; /* 2 * PI * R where R = 130 */
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.3s linear;
+        }
+
+        .timer-text-content {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .session-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            transition: color var(--transition-smooth);
+        }
+
+        body.mode-focus .session-badge {
+            color: var(--focus-secondary);
+        }
+
+        body.mode-break .session-badge {
+            color: var(--break-secondary);
+        }
+
+        .timer-display {
+            font-size: 3.5rem;
+            font-weight: 300;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -1px;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .timer-display.ticking {
+            animation: gentle-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Mode Indicators / Selectors */
+        .mode-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 0.25rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--glass-border);
+            z-index: 1;
+        }
+
+        .mode-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            cursor: pointer;
+            border-radius: 9px;
+            transition: all var(--transition-fast);
+        }
+
+        .mode-btn.active {
+            color: var(--text-main);
+        }
+
+        body.mode-focus .mode-btn[data-mode="focus"] {
+            background: var(--focus-gradient);
+            box-shadow: 0 4px 12px rgba(255, 94, 98, 0.3);
+        }
+
+        body.mode-break .mode-btn[data-mode="break"] {
+            background: var(--break-gradient);
+            box-shadow: 0 4px 12px rgba(0, 176, 155, 0.3);
+        }
+
+        /* Control Buttons */
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .btn {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.9rem 1.75rem;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all var(--transition-fast);
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--theme-gradient);
+            color: var(--text-main);
+            flex: 1.5;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 8px 20px var(--theme-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px var(--theme-glow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--glass-border-focus);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        /* Customize Settings Panel */
+        .settings-panel {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+            z-index: 1;
+        }
+
+        .settings-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin: 0 auto;
+            transition: color var(--transition-fast);
+        }
+
+        .settings-toggle-btn:hover {
+            color: var(--text-main);
+        }
+
+        .settings-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .settings-content.open {
+            max-height: 120px;
+            margin-top: 1rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .setting-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .setting-field label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-container input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .input-container input:focus {
+            border-color: var(--theme-primary);
+        }
+
+        .input-container span {
+            position: absolute;
+            right: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Right Column: Daily Stats & History */
+        .dashboard-container {
+            flex: 1;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 1.75rem;
+            box-shadow: 0 15px 30px var(--glass-shadow);
+        }
+
+        /* Daily Goal Tracker */
+        .goal-tracker {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .goal-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .goal-count {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--theme-primary);
+            transition: color var(--transition-smooth);
+        }
+
+        .goal-dots {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .goal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            transition: all var(--transition-smooth);
+        }
+
+        .goal-dot.completed {
+            background: var(--theme-gradient);
+            box-shadow: 0 0 8px var(--theme-glow);
+            border-color: transparent;
+        }
+
+        /* History Logs */
+        .history-section {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 250px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: color var(--transition-fast);
+        }
+
+        .clear-btn:hover {
+            color: #ff5e62;
+        }
+
+        .history-list-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 240px;
+            padding-right: 0.25rem;
+        }
+
+        /* Custom Scrollbar */
+        .history-list-wrapper::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .history-list-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .history-list-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+        }
+
+        .history-list-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            animation: slide-in 0.3s ease-out;
+        }
+
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .history-item-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--focus-gradient);
+            box-shadow: 0 0 6px rgba(255, 94, 98, 0.4);
+        }
+
+        .history-time {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .history-duration {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 3rem;
+            font-style: italic;
+        }
+
+        /* Footer styling */
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        footer a {
+            color: var(--theme-primary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        footer a:hover {
+            color: var(--theme-secondary);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+                gap: 1.75rem;
+                padding-bottom: 2rem;
+            }
+            
+            .timer-container {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .dashboard-container {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1.5rem 1rem 0.5rem;
+            }
+            
+            main {
+                padding: 0.5rem 1rem 1.5rem;
+            }
+            
+            .timer-container {
+                padding: 1.75rem 1.25rem;
+                border-radius: 20px;
+            }
+            
+            .timer-visual {
+                width: 230px;
+                height: 230px;
+            }
+            
+            .timer-display {
+                font-size: 2.85rem;
+            }
+            
+            .btn {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
+            }
+            
+            .panel {
+                padding: 1.25rem;
+                border-radius: 18px;
+            }
+        }
+    </style>
+</head>
+<body class="mode-focus">
+    <header>
+        <div class="logo-area">
+            <h1><span class="brand-icon">⏱️</span>Elegant Pomodoro</h1>
+        </div>
+    </header>
+
+    <main>
+        <!-- Timer Section -->
+        <section class="timer-container" aria-label="Pomodoro Timer Controls">
+            <!-- Mode Selection Indicator -->
+            <div class="mode-selector">
+                <button type="button" class="mode-btn active" data-mode="focus" id="focusModeBtn">Focus Mode</button>
+                <button type="button" class="mode-btn" data-mode="break" id="breakModeBtn">Short Break</button>
+            </div>
+
+            <!-- SVG Visual Timer Circular Ring -->
+            <div class="timer-visual">
+                <svg class="timer-svg" viewBox="0 0 300 300">
+                    <defs>
+                        <!-- Dynamic linear gradient based on body mode-focus or mode-break -->
+                        <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--theme-primary)" />
+                            <stop offset="100%" stop-color="var(--theme-secondary)" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Background Circle -->
+                    <circle class="timer-circle-bg" cx="150" cy="150" r="130"></circle>
+                    <!-- Animated Progress Ring -->
+                    <circle class="timer-circle-progress" id="progressRing" cx="150" cy="150" r="130"></circle>
+                </svg>
+                
+                <!-- Overlay display text -->
+                <div class="timer-text-content">
+                    <span class="session-badge" id="sessionBadge">Focus</span>
+                    <div class="timer-display" id="timerDisplay">25:00</div>
+                </div>
+            </div>
+
+            <!-- Controls row -->
+            <div class="controls-row">
+                <button type="button" class="btn btn-primary" id="startPauseBtn">
+                    <span id="playPauseIcon">▶</span> <span id="startPauseBtnText">Start Focus</span>
+                </button>
+                <button type="button" class="btn btn-secondary" id="resetBtn" title="Reset Timer">
+                    <span>🔄</span> Reset
+                </button>
+            </div>
+
+            <!-- Settings Accordion -->
+            <div class="settings-panel">
+                <button type="button" class="settings-toggle-btn" id="settingsToggleBtn" aria-expanded="false">
+                    <span>⚙️</span> Customize Durations <span id="toggleArrow">▾</span>
+                </button>
+                <div class="settings-content" id="settingsContent">
+                    <div class="settings-grid">
+                        <div class="setting-field">
+                            <label for="focusInput">Focus Duration</label>
+                            <div class="input-container">
+                                <input type="number" id="focusInput" min="1" max="180" value="25">
+                                <span>min</span>
+                            </div>
+                        </div>
+                        <div class="setting-field">
+                            <label for="breakInput">Break Duration</label>
+                            <div class="input-container">
+                                <input type="number" id="breakInput" min="1" max="180" value="5">
+                                <span>min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats & History Dashboard -->
+        <section class="dashboard-container" aria-label="Session stats and history">
+            <!-- Goal Tracker Panel -->
+            <div class="panel goal-tracker">
+                <div class="goal-header">
+                    <h3>Daily Focus Goal</h3>
+                    <span class="goal-count" id="goalCount">0 / 4</span>
+                </div>
+                <div class="goal-dots" id="goalDotsContainer" aria-label="Daily goal completion steps">
+                    <div class="goal-dot"></div>
+                    <div class="goal-dot"></div>
+                    <div class="goal-dot"></div>
+                    <div class="goal-dot"></div>
+                </div>
+            </div>
+
+            <!-- History Panel -->
+            <div class="panel history-section">
+                <div class="history-header">
+                    <h3>Today's History</h3>
+                    <button type="button" class="clear-btn" id="clearHistoryBtn">Clear Log</button>
+                </div>
+                <div class="history-list-wrapper">
+                    <ul class="history-list" id="historyList">
+                        <!-- History items will be inserted dynamically by script.js -->
+                    </ul>
+                    <div class="empty-state" id="emptyState">No completed sessions today yet. Stay focused!</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 Pomodoro Timer</p>
+    </footer>
+
+    <script>
+        /**
+         * Core logic for the Elegant Pomodoro Timer
+         */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- State Variables ---
+            let timerInterval = null;
+            let timerState = 'idle'; // 'idle', 'running', 'paused'
+            let currentMode = 'focus'; // 'focus', 'break'
+            
+            // Default Durations (in minutes)
+            let focusDuration = 25;
+            let breakDuration = 5;
+            
+            // Timer details
+            let remainingSeconds = focusDuration * 60;
+            let totalSeconds = focusDuration * 60;
+            let endTime = null; // target timestamp for high-accuracy timing
+            
+            // Stats & History
+            let stats = {
+                lastDate: getTodayString(),
+                history: []
+            };
+            
+            // Web Audio API context
+            let audioCtx = null;
+            
+            // SVG Progress ring circumference
+            // R = 130, Circumference = 2 * PI * 130 = 816.814
+            const CIRCUMFERENCE = 816.8;
+
+            // --- DOM Elements ---
+            const body = document.body;
+            const timerDisplay = document.getElementById('timerDisplay');
+            const sessionBadge = document.getElementById('sessionBadge');
+            
+            // Mode Buttons
+            const focusModeBtn = document.getElementById('focusModeBtn');
+            const breakModeBtn = document.getElementById('breakModeBtn');
+            
+            // Control Buttons
+            const startPauseBtn = document.getElementById('startPauseBtn');
+            const startPauseBtnText = document.getElementById('startPauseBtnText');
+            const playPauseIcon = document.getElementById('playPauseIcon');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            // Progress Ring
+            const progressRing = document.getElementById('progressRing');
+            
+            // Settings
+            const settingsToggleBtn = document.getElementById('settingsToggleBtn');
+            const settingsContent = document.getElementById('settingsContent');
+            const toggleArrow = document.getElementById('toggleArrow');
+            const focusInput = document.getElementById('focusInput');
+            const breakInput = document.getElementById('breakInput');
+            
+            // Goal Tracker
+            const goalCount = document.getElementById('goalCount');
+            const goalDotsContainer = document.getElementById('goalDotsContainer');
+            
+            // History
+            const historyList = document.getElementById('historyList');
+            const emptyState = document.getElementById('emptyState');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+            // --- Core Functions ---
+
+            /**
+             * Get local date string in YYYY-MM-DD format
+             */
+            function getTodayString() {
+                const d = new Date();
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            /**
+             * Format seconds into mm:ss
+             */
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                const displayMins = String(mins).padStart(2, '0');
+                const displaySecs = String(secs).padStart(2, '0');
+                return `${displayMins}:${displaySecs}`;
+            }
+
+            /**
+             * Update countdown display, tab title, and progress ring
+             */
+            function updateUI() {
+                // 1. Text display
+                const timeStr = formatTime(remainingSeconds);
+                timerDisplay.textContent = timeStr;
+
+                // 2. Tab title
+                const modeLabel = currentMode === 'focus' ? 'Focus' : 'Break';
+                document.title = `(${timeStr}) ${modeLabel} | Elegant Pomodoro`;
+
+                // 3. Progress Ring
+                const progressFraction = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
+                const offset = (1 - progressFraction) * CIRCUMFERENCE;
+                progressRing.style.strokeDashoffset = offset.toFixed(1);
+
+                // 4. Mode Badges & Theme styles
+                if (currentMode === 'focus') {
+                    body.className = 'mode-focus';
+                    sessionBadge.textContent = 'Focus';
+                    focusModeBtn.classList.add('active');
+                    breakModeBtn.classList.remove('active');
+                } else {
+                    body.className = 'mode-break';
+                    sessionBadge.textContent = 'Break';
+                    breakModeBtn.classList.add('active');
+                    focusModeBtn.classList.remove('active');
+                }
+
+                // 5. Button Text/State
+                if (timerState === 'running') {
+                    playPauseIcon.textContent = '⏸';
+                    startPauseBtnText.textContent = currentMode === 'focus' ? 'Pause Focus' : 'Pause Break';
+                    timerDisplay.classList.add('ticking');
+                } else if (timerState === 'paused') {
+                    playPauseIcon.textContent = '▶';
+                    startPauseBtnText.textContent = 'Resume';
+                    timerDisplay.classList.remove('ticking');
+                } else {
+                    // Idle
+                    playPauseIcon.textContent = '▶';
+                    startPauseBtnText.textContent = currentMode === 'focus' ? 'Start Focus' : 'Start Break';
+                    timerDisplay.classList.remove('ticking');
+                }
+            }
+
+            /**
+             * Initialize Audio Context on user click
+             */
+            function initAudio() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }
+
+            /**
+             * Play beautiful, synthesised bell/chime notification sound when timer ends
+             */
+            function playAlarm() {
+                initAudio();
+                if (!audioCtx) return;
+
+                try {
+                    const now = audioCtx.currentTime;
+                    
+                    // Note 1: E5 (659.25 Hz)
+                    const osc1 = audioCtx.createOscillator();
+                    const gain1 = audioCtx.createGain();
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(659.25, now);
+                    
+                    gain1.gain.setValueAtTime(0, now);
+                    gain1.gain.linearRampToValueAtTime(0.25, now + 0.05);
+                    gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+                    
+                    osc1.connect(gain1);
+                    gain1.connect(audioCtx.destination);
+                    
+                    // Note 2: A5 (880 Hz) - plays 0.15 seconds later
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(880.00, now + 0.15);
+                    
+                    gain2.gain.setValueAtTime(0, now + 0.15);
+                    gain2.gain.linearRampToValueAtTime(0.3, now + 0.2);
+                    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+                    
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    
+                    // Start and stop oscillators
+                    osc1.start(now);
+                    osc1.stop(now + 0.5);
+                    
+                    osc2.start(now + 0.15);
+                    osc2.stop(now + 0.8);
+                } catch (e) {
+                    console.error("Failed to play synthesized alarm sound", e);
+                }
+            }
+
+            /**
+             * Change mode (Focus <-> Break)
+             */
+            function switchMode(newMode, userInitiated = false) {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+
+                currentMode = newMode;
+                timerState = 'idle';
+                
+                const duration = currentMode === 'focus' ? focusDuration : breakDuration;
+                totalSeconds = duration * 60;
+                remainingSeconds = totalSeconds;
+
+                updateUI();
+
+                if (!userInitiated) {
+                    playAlarm();
+                    startTimer();
+                }
+            }
+
+            /**
+             * Tick function using high-accuracy drift correction
+             */
+            function tick() {
+                checkDailyReset();
+
+                const now = Date.now();
+                const diff = Math.max(0, Math.round((endTime - now) / 1000));
+                
+                remainingSeconds = diff;
+                updateUI();
+
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    
+                    if (currentMode === 'focus') {
+                        saveFocusSession();
+                        switchMode('break', false);
+                    } else {
+                        switchMode('focus', false);
+                    }
+                }
+            }
+
+            /**
+             * Start the countdown timer
+             */
+            function startTimer() {
+                initAudio();
+                checkDailyReset();
+
+                timerState = 'running';
+                endTime = Date.now() + remainingSeconds * 1000;
+                
+                updateUI();
+                
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(tick, 200);
+            }
+
+            /**
+             * Pause the countdown timer
+             */
+            function pauseTimer() {
+                timerState = 'paused';
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                updateUI();
+            }
+
+            /**
+             * Reset the timer to the default state for the current mode
+             */
+            function resetTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                timerState = 'idle';
+                const duration = currentMode === 'focus' ? focusDuration : breakDuration;
+                totalSeconds = duration * 60;
+                remainingSeconds = totalSeconds;
+                updateUI();
+            }
+
+            /**
+             * Toggle play/pause state
+             */
+            function handlePlayPause() {
+                if (timerState === 'running') {
+                    pauseTimer();
+                } else {
+                    startTimer();
+                }
+            }
+
+            // --- Settings Panel Logic ---
+
+            /**
+             * Toggle settings accordion open/closed
+             */
+            function toggleSettings() {
+                const isOpen = settingsContent.classList.contains('open');
+                if (isOpen) {
+                    settingsContent.classList.remove('open');
+                    toggleArrow.textContent = '▾';
+                    settingsToggleBtn.setAttribute('aria-expanded', 'false');
+                } else {
+                    settingsContent.classList.add('open');
+                    toggleArrow.textContent = '▴';
+                    settingsToggleBtn.setAttribute('aria-expanded', 'true');
+                }
+            }
+
+            /**
+             * Handle updating custom durations from settings inputs
+             */
+            function handleDurationInputs() {
+                let fVal = parseInt(focusInput.value, 10);
+                let bVal = parseInt(breakInput.value, 10);
+
+                if (isNaN(fVal) || fVal < 1) fVal = 1;
+                if (fVal > 180) fVal = 180;
+                if (isNaN(bVal) || bVal < 1) bVal = 1;
+                if (bVal > 180) bVal = 180;
+
+                focusDuration = fVal;
+                breakDuration = bVal;
+
+                localStorage.setItem('pomodoro_focus_dur', focusDuration);
+                localStorage.setItem('pomodoro_break_dur', breakDuration);
+
+                if (timerState === 'idle') {
+                    const currentDur = currentMode === 'focus' ? focusDuration : breakDuration;
+                    totalSeconds = currentDur * 60;
+                    remainingSeconds = totalSeconds;
+                    updateUI();
+                }
+            }
+
+            // --- Storage & History Logic ---
+
+            /**
+             * Load settings and focus history from localStorage
+             */
+            function loadSavedData() {
+                const savedFocus = localStorage.getItem('pomodoro_focus_dur');
+                const savedBreak = localStorage.getItem('pomodoro_break_dur');
+                if (savedFocus) {
+                    focusDuration = parseInt(savedFocus, 10);
+                    focusInput.value = focusDuration;
+                }
+                if (savedBreak) {
+                    breakDuration = parseInt(savedBreak, 10);
+                    breakInput.value = breakDuration;
+                }
+
+                resetTimer();
+
+                const savedStats = localStorage.getItem('pomodoro_stats');
+                if (savedStats) {
+                    try {
+                        const parsed = JSON.parse(savedStats);
+                        if (parsed && parsed.lastDate) {
+                            stats = parsed;
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse pomodoro stats from localStorage", e);
+                    }
+                }
+
+                checkDailyReset();
+                updateHistoryUI();
+            }
+
+            /**
+             * Check if a calendar day shift has occurred.
+             */
+            function checkDailyReset() {
+                const todayStr = getTodayString();
+                if (stats.lastDate !== todayStr) {
+                    stats.lastDate = todayStr;
+                    stats.history = [];
+                    saveStatsToStorage();
+                    updateHistoryUI();
+                }
+            }
+
+            /**
+             * Save current stats object into localStorage
+             */
+            function saveStatsToStorage() {
+                localStorage.setItem('pomodoro_stats', JSON.stringify(stats));
+            }
+
+            /**
+             * Save completed focus session record and append to daily log
+             */
+            function saveFocusSession() {
+                checkDailyReset();
+
+                const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+                const timestampStr = new Date().toLocaleTimeString([], timeOptions);
+
+                const newSession = {
+                    id: Date.now(),
+                    timestamp: timestampStr,
+                    duration: focusDuration
+                };
+
+                stats.history.unshift(newSession);
+                saveStatsToStorage();
+                updateHistoryUI();
+            }
+
+            /**
+             * Redraw goal dots and session history list items in DOM
+             */
+            function updateHistoryUI() {
+                const sessionsToday = stats.history.length;
+                const dailyGoalCount = 4;
+                
+                goalCount.textContent = `${sessionsToday} / ${dailyGoalCount}`;
+
+                const dots = goalDotsContainer.querySelectorAll('.goal-dot');
+                dots.forEach((dot, index) => {
+                    if (index < sessionsToday) {
+                        dot.classList.add('completed');
+                    } else {
+                        dot.classList.remove('completed');
+                    }
+                });
+
+                historyList.innerHTML = '';
+                if (stats.history.length === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    emptyState.style.display = 'none';
+                    stats.history.forEach(session => {
+                        const li = document.createElement('li');
+                        li.className = 'history-item';
+                        
+                        li.innerHTML = `
+                            <div class="history-item-left">
+                                <div class="history-dot"></div>
+                                <span>Focus Session</span>
+                                <span class="history-time">${session.timestamp}</span>
+                            </div>
+                            <span class="history-duration">${session.duration}m</span>
+                        `;
+                        historyList.appendChild(li);
+                    });
+                }
+            }
+
+            /**
+             * Clear the local focus sessions log
+             */
+            function clearHistory() {
+                if (confirm("Are you sure you want to clear today's Pomodoro history?")) {
+                    stats.history = [];
+                    saveStatsToStorage();
+                    updateHistoryUI();
+                }
+            }
+
+            // --- Event Listeners ---
+
+            startPauseBtn.addEventListener('click', handlePlayPause);
+            resetBtn.addEventListener('click', resetTimer);
+            
+            focusModeBtn.addEventListener('click', () => {
+                if (currentMode !== 'focus') {
+                    initAudio();
+                    switchMode('focus', true);
+                }
+            });
+
+            breakModeBtn.addEventListener('click', () => {
+                if (currentMode !== 'break') {
+                    initAudio();
+                    switchMode('break', true);
+                }
+            });
+
+            settingsToggleBtn.addEventListener('click', toggleSettings);
+            focusInput.addEventListener('change', handleDurationInputs);
+            breakInput.addEventListener('change', handleDurationInputs);
+            focusInput.addEventListener('input', handleDurationInputs);
+            breakInput.addEventListener('input', handleDurationInputs);
+
+            clearHistoryBtn.addEventListener('click', clearHistory);
+
+            // --- Initialization ---
+            loadSavedData();
+        });
+    </script>
+</body>
+</html>
